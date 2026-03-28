@@ -13,7 +13,7 @@ const startServer = async () => {
     const server = http.createServer(app);
 
     server.listen(env.port, () => {
-      logger.info(`Server running on http://localhost:${env.port}`);
+      logger.info(`🎉 Server running on http://localhost:${env.port}`);
       logger.info(`Environment: ${env.nodeEnv}`);
     });
 

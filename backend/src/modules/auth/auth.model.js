@@ -7,6 +7,7 @@ const tokenBlacklistSchema = new mongoose.Schema(
       required: true,
       unique: true,
       index: true,
+      trim: true,
     },
     tokenType: {
       type: String,
@@ -16,13 +17,12 @@ const tokenBlacklistSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       required: true,
-      index: true,
     },
   },
   { timestamps: true }
 );
 
-// Auto-remove expired tokens
+// TTL cleanup index (single index declaration to avoid duplicate-index warnings).
 tokenBlacklistSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model("TokenBlacklist", tokenBlacklistSchema);

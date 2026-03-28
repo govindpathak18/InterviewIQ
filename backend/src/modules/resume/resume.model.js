@@ -10,29 +10,46 @@ const resumeSchema = new mongoose.Schema(
     },
     title: {
       type: String,
-      required: true,
       trim: true,
-      default: "Primary Resume",
+      default: "My Resume",
+      maxlength: 120,
     },
     originalText: {
       type: String,
       required: true,
+      minlength: 50,
     },
     parsedData: {
-      type: Object, // later can be stricter
+      type: Object,
       default: {},
     },
     source: {
       type: String,
-      enum: ["upload", "manual"],
+      enum: ["manual", "upload"],
       default: "manual",
+      index: true,
+    },
+    fileName: {
+      type: String,
+      trim: true,
+      default: "",
+      maxlength: 255,
+    },
+    mimeType: {
+      type: String,
+      trim: true,
+      default: "",
+      maxlength: 120,
     },
     isActive: {
       type: Boolean,
       default: true,
+      index: true,
     },
   },
   { timestamps: true }
 );
+
+resumeSchema.index({ userId: 1, createdAt: -1 });
 
 module.exports = mongoose.model("Resume", resumeSchema);

@@ -11,6 +11,15 @@ const requiredVars = [
   "JWT_ACCESS_EXPIRES_IN",
   "JWT_REFRESH_SECRET",
   "JWT_REFRESH_EXPIRES_IN",
+  "SMTP_HOST",
+  "SMTP_PORT",
+  "SMTP_SECURE",
+  "SMTP_USER",
+  "SMTP_PASS",
+  "SMTP_FROM",
+  "APP_BASE_URL",
+  "RESET_PASSWORD_URL",
+  "EMAIL_VERIFY_URL",
 ];
 
 const missingVars = requiredVars.filter((key) => !process.env[key]);
@@ -44,7 +53,19 @@ const env = {
     refreshSecret: process.env.JWT_REFRESH_SECRET,
     refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
   },
-};
 
+  mail: {
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_SECURE === "true",
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+    from: process.env.SMTP_FROM,
+  },
+
+  appBaseUrl: process.env.APP_BASE_URL,
+  resetPasswordUrl: process.env.RESET_PASSWORD_URL,
+  emailVerifyUrl: process.env.EMAIL_VERIFY_URL,
+};
 
 module.exports = env;

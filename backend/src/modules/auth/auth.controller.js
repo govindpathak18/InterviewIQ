@@ -3,11 +3,6 @@ const sendResponse = require("../../utils/response");
 const ApiError = require("../../utils/ApiError");
 const User = require("../user/user.model");
 const authService = require("./auth.service");
-const {
-  registerSchema,
-  loginSchema,
-  refreshSchema,
-} = require("./auth.validation");
 
 const cookieOptions = {
   httpOnly: true,
@@ -16,17 +11,7 @@ const cookieOptions = {
 };
 
 const register = asyncHandler(async (req, res) => {
-  const parsed = registerSchema.safeParse(req.body);
-
-  if (!parsed.success) {
-    throw new ApiError(
-      400,
-      parsed.error.issues[0]?.message || "Invalid request body",
-      parsed.error.issues.map((issue) => issue.message)
-    );
-  }
-
-  const user = await authService.register(parsed.data);
+  const user = await authService.register(req.body);
 
   return sendResponse(res, {
     statusCode: 201,
@@ -36,26 +21,16 @@ const register = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const parsed = loginSchema.safeParse(req.body);
-
-  if (!parsed.success) {
-    throw new ApiError(
-      400,
-      parsed.error.issues[0]?.message || "Invalid request body",
-      parsed.error.issues.map((issue) => issue.message)
-    );
-  }
-
-  const { user, accessToken, refreshToken } = await authService.login(parsed.data);
+  const { user, accessToken, refreshToken } = await authService.login(req.body);
 
   res.cookie("accessToken", accessToken, {
     ...cookieOptions,
-    maxAge: 15 * 60 * 1000, // 15 min
+    maxAge: 15 * 60 * 1000,
   });
 
   res.cookie("refreshToken", refreshToken, {
     ...cookieOptions,
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   return sendResponse(res, {
@@ -66,17 +41,7 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const refresh = asyncHandler(async (req, res) => {
-  const parsed = refreshSchema.safeParse(req.body);
-
-  if (!parsed.success) {
-    throw new ApiError(
-      400,
-      parsed.error.issues[0]?.message || "Invalid request body",
-      parsed.error.issues.map((issue) => issue.message)
-    );
-  }
-
-  const refreshToken = req.cookies?.refreshToken || parsed.data?.refreshToken;
+  const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
 
   const { user, accessToken, refreshToken: newRefreshToken } =
     await authService.refresh(refreshToken);
@@ -119,7 +84,7 @@ const logout = asyncHandler(async (req, res) => {
 const me = asyncHandler(async (req, res) => {
   const user = await User.findById(req.user._id).select("-password");
 
-  if (!user) {
+  if (!user || !user.isActive) {
     throw new ApiError(404, "User not found");
   }
 
@@ -130,10 +95,53 @@ const me = asyncHandler(async (req, res) => {
   });
 });
 
+const forgotPassword = asyncHandler(async (req, res) => {
+  await authService.forgotPassword(req.body);
+
+  return sendResponse(res, {
+    statusCode: 200,
+    message: "If that email exists, a password reset link has been sent",
+  });
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  await authService.resetPassword(req.body);
+
+  return sendResponse(res, {
+    statusCode: 200,
+    message: "Password reset successfully",
+  });
+});
+
+const sendVerificationEmail = asyncHandler(async (req, res) => {
+  await authService.sendVerificationEmail({
+    userId: req.user?._id,
+    email: req.body?.email,
+  });
+
+  return sendResponse(res, {
+    statusCode: 200,
+    message: "Verification email sent successfully",
+  });
+});
+
+const verifyEmail = asyncHandler(async (req, res) => {
+  await authService.verifyEmail(req.body);
+
+  return sendResponse(res, {
+    statusCode: 200,
+    message: "Email verified successfully",
+  });
+});
+
 module.exports = {
   register,
   login,
   refresh,
   logout,
   me,
+  forgotPassword,
+  resetPassword,
+  sendVerificationEmail,
+  verifyEmail,
 };

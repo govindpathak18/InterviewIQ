@@ -21,7 +21,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: 6,
-      select: false, // never return by default
+      select: false,
     },
     role: {
       type: String,
@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema(
     isEmailVerified: {
       type: Boolean,
       default: false,
+    },
+    emailVerifiedAt: {
+      type: Date,
+      default: null,
     },
     headline: {
       type: String,
@@ -92,9 +96,16 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-
   },
   { timestamps: true }
 );
+
+userSchema.set("toJSON", {
+  transform: (_, ret) => {
+    delete ret.password;
+    delete ret.__v;
+    return ret;
+  },
+});
 
 module.exports = mongoose.model("User", userSchema);

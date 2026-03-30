@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const JobDescription = require("./jobDescription.model");
+const Resume = require("../resume/resume.model");
 const ApiError = require("../../utils/ApiError");
-const mongoose = require("mongoose");
 
 const ensureOwnedResume = async (resumeId, userId) => {
   if (!resumeId) {
@@ -23,7 +23,6 @@ const ensureOwnedResume = async (resumeId, userId) => {
   }
 };
 
-
 const assertOwnership = (document, userId) => {
   if (!document || !document.isActive) {
     throw new ApiError(404, "Job description not found");
@@ -40,7 +39,6 @@ const createJobDescription = async (payload) => {
   const document = await JobDescription.create(payload);
   return document;
 };
-
 
 const getMyJobDescriptions = async (userId) => {
   return JobDescription.find({ userId, isActive: true }).sort({ createdAt: -1 });
@@ -63,7 +61,6 @@ const updateJobDescription = async (id, userId, updates) => {
   await document.save();
   return document;
 };
-
 
 const deleteJobDescription = async (id, userId) => {
   const document = await getJobDescriptionById(id, userId);

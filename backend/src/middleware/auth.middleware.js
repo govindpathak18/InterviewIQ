@@ -5,10 +5,8 @@ const User = require("../modules/user/user.model");
 const { isBlacklisted } = require("../modules/auth/auth.service");
 
 const extractAccessToken = (req) => {
-  // 1) Cookie token 
   if (req.cookies?.accessToken) return req.cookies.accessToken;
 
-  // 2) Bearer token fallback
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith("Bearer ")) {
     return authHeader.split(" ")[1];
@@ -38,8 +36,8 @@ const authenticate = async (req, res, next) => {
     }
 
     const user = await User.findById(decoded.userId).select("-password");
-    if (!user) {
-      return next(new ApiError(401, "User not found"));
+    if (!user || !user.isActive) {
+      return next(new ApiError(401, "User not found or inactive"));
     }
 
     req.user = {
@@ -47,6 +45,7 @@ const authenticate = async (req, res, next) => {
       role: user.role,
       email: user.email,
       fullName: user.fullName,
+      refreshTokenVersion: user.refreshTokenVersion,
     };
 
     return next();
@@ -55,9 +54,10 @@ const authenticate = async (req, res, next) => {
   }
 };
 
-// Optional RBAC middleware
 const authorize = (...allowedRoles) => (req, res, next) => {
-  if (!req.user) return next(new ApiError(401, "Unauthorized"));
+  if (!req.user) {
+    return next(new ApiError(401, "Unauthorized"));
+  }
 
   if (!allowedRoles.includes(req.user.role)) {
     return next(new ApiError(403, "Forbidden: insufficient permissions"));

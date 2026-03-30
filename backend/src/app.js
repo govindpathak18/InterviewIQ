@@ -1,5 +1,4 @@
-
-
+// src/app.js
 const express = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -10,14 +9,7 @@ const rateLimitMiddleware = require("./middleware/rateLimit.middleware");
 const env = require("./config/env");
 const ApiError = require("./utils/ApiError");
 const errorMiddleware = require("./middleware/error.middleware");
-
-// Route imports
-const authRoutes = require("./modules/auth/auth.routes");
-const resumeRoutes = require("./modules/resume/resume.routes");
-const jobDescriptionRoutes = require("./modules/jobDescription/jobDescription.routes")
-const aiRoutes = require("./modules/ai/ai.routes");;
-const interviewRoutes = require("./modules/interview/interview.routes");
-// const userRoutes = require("./modules/user/user.routes");
+const apiRoutes = require("./routes");
 
 const app = express();
 
@@ -58,12 +50,7 @@ app.get("/health", (req, res) => {
 });
 
 // ---------- API routes ----------
-app.use(`${env.apiPrefix}/auth`, authRoutes);
-app.use(`${env.apiPrefix}/resume`, resumeRoutes);
-app.use(`${env.apiPrefix}/job-description`, jobDescriptionRoutes);
-app.use(`${env.apiPrefix}/ai`, aiRoutes);
-app.use(`${env.apiPrefix}/interview`, interviewRoutes);
-// app.use(`${env.apiPrefix}/users`, userRoutes);
+app.use(env.apiPrefix, apiRoutes);
 
 // ---------- 404 handler ----------
 app.use((req, res, next) => {

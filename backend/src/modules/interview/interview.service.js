@@ -1,7 +1,7 @@
 const ApiError = require("../../utils/ApiError");
 const aiService = require("../ai/ai.service");
 const Interview = require("./interview.model");
-
+const mongoose = require("mongoose");
 const generateInterview = async ({ userId, resumeId, jobDescriptionId, selfDescription }) => {
   const aiOutput = await aiService.generateInterviewPack({
     userId,
@@ -35,6 +35,10 @@ const getMyInterviews = async (userId) => {
 };
 
 const getInterviewById = async (id, userId) => {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new ApiError(400, "Invalid interview id");
+  }
+
   const interview = await Interview.findById(id);
   if (!interview || !interview.isActive) {
     throw new ApiError(404, "Interview not found");

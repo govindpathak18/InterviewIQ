@@ -1,6 +1,28 @@
 const mongoose = require("mongoose");
 const JobDescription = require("./jobDescription.model");
 const ApiError = require("../../utils/ApiError");
+const mongoose = require("mongoose");
+
+const ensureOwnedResume = async (resumeId, userId) => {
+  if (!resumeId) {
+    return;
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(resumeId)) {
+    throw new ApiError(400, "Invalid resume id");
+  }
+
+  const resume = await Resume.findOne({
+    _id: resumeId,
+    userId,
+    isActive: true,
+  }).lean();
+
+  if (!resume) {
+    throw new ApiError(404, "Resume not found");
+  }
+};
+
 
 const assertOwnership = (document, userId) => {
   if (!document || !document.isActive) {
@@ -13,9 +35,12 @@ const assertOwnership = (document, userId) => {
 };
 
 const createJobDescription = async (payload) => {
+  await ensureOwnedResume(payload.resumeId, payload.userId);
+
   const document = await JobDescription.create(payload);
   return document;
 };
+
 
 const getMyJobDescriptions = async (userId) => {
   return JobDescription.find({ userId, isActive: true }).sort({ createdAt: -1 });
@@ -33,10 +58,12 @@ const getJobDescriptionById = async (id, userId) => {
 
 const updateJobDescription = async (id, userId, updates) => {
   const document = await getJobDescriptionById(id, userId);
+  await ensureOwnedResume(updates.resumeId, userId);
   Object.assign(document, updates);
   await document.save();
   return document;
 };
+
 
 const deleteJobDescription = async (id, userId) => {
   const document = await getJobDescriptionById(id, userId);

@@ -17,6 +17,24 @@ const decodeExpiryToDate = (token) => {
   return new Date(decoded.exp * 1000);
 };
 
+const blacklistToken = async (token, tokenType) => {
+  if (!token) {
+    return;
+  }
+
+  await TokenBlacklist.updateOne(
+    { token },
+    {
+      $setOnInsert: {
+        token,
+        tokenType,
+        expiresAt: decodeExpiryToDate(token),
+      },
+    },
+    { upsert: true }
+  );
+};
+
 const isBlacklisted = async (token) => {
   const exists = await TokenBlacklist.findOne({ token }).lean();
   return Boolean(exists);
@@ -75,12 +93,7 @@ const refresh = async (refreshToken) => {
   const newAccessToken = generateAccessToken(payload);
   const newRefreshToken = generateRefreshToken(payload);
 
-  // rotate old refresh token -> blacklist old one
-  await TokenBlacklist.create({
-    token: refreshToken,
-    tokenType: "refresh",
-    expiresAt: decodeExpiryToDate(refreshToken),
-  });
+  await blacklistToken(refreshToken, "refresh");
 
   return { user, accessToken: newAccessToken, refreshToken: newRefreshToken };
 };
@@ -89,23 +102,11 @@ const logout = async ({ accessToken, refreshToken }) => {
   const tasks = [];
 
   if (accessToken) {
-    tasks.push(
-      TokenBlacklist.create({
-        token: accessToken,
-        tokenType: "access",
-        expiresAt: decodeExpiryToDate(accessToken),
-      })
-    );
+    tasks.push(blacklistToken(accessToken, "access"));
   }
 
   if (refreshToken) {
-    tasks.push(
-      TokenBlacklist.create({
-        token: refreshToken,
-        tokenType: "refresh",
-        expiresAt: decodeExpiryToDate(refreshToken),
-      })
-    );
+    tasks.push(blacklistToken(refreshToken, "refresh"));
   }
 
   await Promise.all(tasks);

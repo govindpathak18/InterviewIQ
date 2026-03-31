@@ -1,59 +1,51 @@
-import { ArrowRight, Eye, EyeOff, LockKeyhole } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, Eye, EyeOff, LockKeyhole, Mail, User2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { authApi } from "../api/auth.api";
+import { useRegister } from "../hooks/useRegister";
 
-const resetPasswordSchema = z
-  .object({
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    confirmPassword: z.string().min(6, "Confirm your password"),
-  })
-  .refine((values) => values.password === values.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+const registerSchema = z.object({
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  email: z.email("Enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
-export default function ResetPasswordPage() {
+export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-
-  const token = useMemo(() => searchParams.get("token") || "", [searchParams]);
+  const registerMutation = useRegister();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(registerSchema),
     defaultValues: {
+      fullName: "",
+      email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
-  const onSubmit = async (values) => {
-    if (!token) {
-      toast.error("Reset token is missing");
-      return;
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      navigate("/dashboard", { replace: true });
     }
+  }, [navigate]);
 
+  const onSubmit = async (values) => {
     try {
-      await authApi.resetPassword({
-        token,
-        password: values.password,
-      });
-
-      toast.success("Password reset successfully");
+      await registerMutation.mutateAsync(values);
+      toast.success("Account created successfully");
       navigate("/login", { replace: true });
     } catch (error) {
       const message =
-        error?.response?.data?.message || "Unable to reset password";
+        error?.response?.data?.message || "Unable to create account right now";
       toast.error(message);
     }
   };
@@ -64,28 +56,68 @@ export default function ResetPasswordPage() {
 
       <div className="relative">
         <p className="text-xs uppercase tracking-[0.3em] text-lime-200/80">
-          Set New Password
+          Join InterviewIQ
         </p>
 
         <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white">
-          Create a new password
+          Create your account
         </h1>
 
         <p className="mt-3 text-sm leading-7 text-white/60">
-          Choose a strong password to secure your InterviewIQ account.
+          Start building resumes, planning interviews, and improving job-fit with AI.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
           <div>
             <label className="mb-2 block text-sm font-medium text-white/80">
-              New password
+              Full name
+            </label>
+
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 py-3">
+              <User2 size={18} className="text-white/40" />
+              <input
+                type="text"
+                placeholder="Govind Pathak"
+                className="w-full bg-transparent text-white outline-none placeholder:text-white/30"
+                {...register("fullName")}
+              />
+            </div>
+
+            {errors.fullName ? (
+              <p className="mt-2 text-sm text-red-300">{errors.fullName.message}</p>
+            ) : null}
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-white/80">
+              Email address
+            </label>
+
+            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 py-3">
+              <Mail size={18} className="text-white/40" />
+              <input
+                type="email"
+                placeholder="govind@example.com"
+                className="w-full bg-transparent text-white outline-none placeholder:text-white/30"
+                {...register("email")}
+              />
+            </div>
+
+            {errors.email ? (
+              <p className="mt-2 text-sm text-red-300">{errors.email.message}</p>
+            ) : null}
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-medium text-white/80">
+              Password
             </label>
 
             <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 py-3">
               <LockKeyhole size={18} className="text-white/40" />
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder="Enter new password"
+                placeholder="Create a strong password"
                 className="w-full bg-transparent text-white outline-none placeholder:text-white/30"
                 {...register("password")}
               />
@@ -103,49 +135,20 @@ export default function ResetPasswordPage() {
             ) : null}
           </div>
 
-          <div>
-            <label className="mb-2 block text-sm font-medium text-white/80">
-              Confirm password
-            </label>
-
-            <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/6 px-4 py-3">
-              <LockKeyhole size={18} className="text-white/40" />
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm new password"
-                className="w-full bg-transparent text-white outline-none placeholder:text-white/30"
-                {...register("confirmPassword")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword((value) => !value)}
-                className="text-white/45 transition hover:text-white/80"
-              >
-                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-
-            {errors.confirmPassword ? (
-              <p className="mt-2 text-sm text-red-300">
-                {errors.confirmPassword.message}
-              </p>
-            ) : null}
-          </div>
-
           <button
             type="submit"
-            disabled={isSubmitting}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={registerMutation.isPending}
+            className="btn-3d btn-3d-light inline-flex w-full items-center justify-center gap-2 px-5 py-3.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {isSubmitting ? "Updating..." : "Reset Password"}
+            {registerMutation.isPending ? "Creating..." : "Create Account"}
             <ArrowRight size={16} className="text-black" />
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-white/55">
-          Back to{" "}
+          Already have an account?{" "}
           <Link to="/login" className="text-cyan-200 hover:text-cyan-100">
-            login
+            Sign in
           </Link>
         </p>
       </div>

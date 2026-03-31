@@ -1,4 +1,3 @@
-// src/features/profile/api/profile.api.js
 import { api } from "../../../lib/api/axios";
 import { endpoints } from "../../../lib/api/endpoints";
 

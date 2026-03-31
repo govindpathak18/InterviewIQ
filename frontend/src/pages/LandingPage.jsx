@@ -25,18 +25,19 @@ const features = [
 export default function LandingPage() {
   return (
     <main className="relative overflow-hidden">
-      <section className="px-6 pt-24 pb-16 sm:pt-28 lg:px-10 lg:pt-32">
+      <section className="px-6 pt-24 pb-16 sm:pt-10 lg:px-10 lg:pt-28">
         <div className="mx-auto max-w-7xl">
           <div className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
             <div>
-              <p className="inline-flex rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-1.5 text-xs uppercase tracking-[0.3em] text-cyan-200">
+              <p className="inline-flex mb-2 rounded-full border border-cyan-300/20 bg-cyan-300/10 px-4 py-1.5 text-xs tracking-[0.3em] text-cyan-200">
                 InterviewIQ Platform
               </p>
 
-              <h1 className="mt-8 max-w-4xl text-5xl font-semibold leading-[0.95] tracking-tight text-white sm:text-6xl lg:text-8xl">
-                Build a resume that clears ATS and prepares you for the interview.
+              <h1 class="text-5xl md:text-7xl font-semibold text-transparent 
+           [--stroke:1px] 
+           [-webkit-text-stroke:var(--stroke)_white]">
+                Build a resume that clears ATS
               </h1>
-
               <p className="mt-8 max-w-2xl text-base leading-8 text-white/65 sm:text-lg">
                 A modern AI-powered career workspace that helps you shape resumes,
                 align them with job descriptions, and generate interview plans that
@@ -46,10 +47,10 @@ export default function LandingPage() {
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <Link
                   to="/register"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white px-6 py-3.5 text-sm font-semibold text-black transition hover:scale-[1.02]"
+                  className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-medium text-white transition hover:bg-white/10"
                 >
                   Get Started
-                  <ArrowRight size={16} className="text-black" />
+                  <ArrowRight size={16} className="text-white ml-1" />
                 </Link>
 
                 <Link

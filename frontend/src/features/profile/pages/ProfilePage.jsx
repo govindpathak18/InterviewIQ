@@ -195,7 +195,7 @@ export default function ProfilePage() {
               </p>
 
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-                <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-medium text-cyan-100">
+                <span className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-medium capitalize text-cyan-100">
                   {profile?.role || "user"}
                 </span>
 
@@ -404,7 +404,7 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={updateProfileMutation.isPending}
-              className="mt-2 inline-flex w-full items-center justify-center rounded-2xl bg-white px-5 py-3.5 text-sm font-semibold text-zinc-950 transition hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+              className="btn-3d btn-3d-light mt-2 inline-flex w-full items-center justify-center px-5 py-3.5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-70"
             >
               {updateProfileMutation.isPending ? "Saving..." : "Save Profile"}
             </button>
@@ -451,7 +451,7 @@ export default function ProfilePage() {
               <button
                 type="submit"
                 disabled={isChangingPassword}
-                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-white/85 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-70"
+                className="btn-3d btn-3d-dark w-full px-4 py-3 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {isChangingPassword ? "Updating..." : "Update Password"}
               </button>

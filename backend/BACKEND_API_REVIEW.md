@@ -139,5 +139,14 @@ This review summarizes the current backend API surface and module behavior so fr
 4. **List endpoints without pagination** (`/resume/my`, `/job-description/my`, `/interview/my`)
    - could become expensive as user data grows.
 
+## 6) Suggested "Frontend Ready" Checklist
+
+- [ ] Freeze request/response examples per endpoint (JSON fixtures).
+- [ ] Add OpenAPI schema + share generated typed client.
+- [ ] Decide canonical auth pattern (cookie-only vs cookie+bearer hybrid).
+- [ ] Add pagination strategy for non-admin lists.
+- [ ] Add endpoint-level examples for AI success/failure and loading states.
 
 ---
+
+If you want, next step can be: I generate a strict endpoint contract file (OpenAPI YAML or frontend TypeScript types) directly from these modules.

@@ -1,14 +1,28 @@
-import axios from "axios";
+const DEFAULT_API_BASE_URL = "http://localhost:5000/api/v1";
 
-export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api/v1",
-  withCredentials: true,
-});
+export async function apiRequest(path, options = {}) {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL;
 
-api.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    const msg = error?.response?.data?.message || "Something went wrong";
-    return Promise.reject({ ...error, friendlyMessage: msg });
+  const response = await fetch(`${baseUrl}${path}`, {
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
+
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
   }
-);
+
+  if (!response.ok) {
+    const message = payload?.message || "Request failed";
+    throw new Error(message);
+  }
+
+  return payload;
+}

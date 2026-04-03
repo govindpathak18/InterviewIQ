@@ -1,21 +1,16 @@
-import { api } from "../../../core/api/client";
+import { apiRequest } from "../../../core/api/client";
 import { ENDPOINTS } from "../../../core/api/endpoints";
 
-export const authApi = {
-  login: async (payload) => {
-    const { data } = await api.post(ENDPOINTS.auth.login, payload);
-    return data?.data;
-  },
-  register: async (payload) => {
-    const { data } = await api.post(ENDPOINTS.auth.register, payload);
-    return data?.data;
-  },
-  me: async () => {
-    const { data } = await api.get(ENDPOINTS.auth.me);
-    return data?.data;
-  },
-  logout: async () => {
-    const { data } = await api.post(ENDPOINTS.auth.logout);
-    return data;
-  },
-};
+export async function loginUser(payload) {
+  return apiRequest(ENDPOINTS.auth.login, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function registerUser(payload) {
+  return apiRequest(ENDPOINTS.auth.register, {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}

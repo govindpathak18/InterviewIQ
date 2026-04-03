@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.15), transparent 35%),
+    radial-gradient(circle at 90% 20%, rgba(6, 182, 212, 0.15), transparent 30%),
+    var(--brand-bg);
+  color: var(--brand-text);
+  font-family: Inter, system-ui, sans-serif;
+}
+
+.bg-brand-bg { background-color: var(--brand-bg); }
+.text-brand-text { color: var(--brand-text); }

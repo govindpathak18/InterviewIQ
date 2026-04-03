@@ -6,10 +6,6 @@ import ResumesPage from "../../features/resumes/pages/resumes.page";
 import ResumeDetailsPage from "../../features/resumes/pages/resume-details.page";
 import ThemeToggle from "../../shared/components/ui/theme-toggle";
 import LandingPage from "../../features/landing/pages/landing.page";
-import { Navigate, useRoutes } from "react-router-dom";
-import ProtectedRoute from "./protected.route";
-import LoginPage from "../../features/auth/pages/login.page";
-import RegisterPage from "../../features/auth/pages/register.page";
 
 function DashboardPage() {
   return (

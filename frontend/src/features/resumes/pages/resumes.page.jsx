@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import ThemeToggle from "../../../shared/components/ui/theme-toggle";
 import {
   createManualResume,
   deleteResume,
@@ -83,7 +84,10 @@ export default function ResumesPage() {
         />
         <div className="feature-hero-overlay" />
         <div className="feature-hero-copy">
-          <h1>Resumes</h1>
+          <div className="row-between">
+            <h1>Resumes</h1>
+            <ThemeToggle />
+          </div>
           <p>Create and manage resumes for AI interview and ATS generation.</p>
         </div>
       </div>

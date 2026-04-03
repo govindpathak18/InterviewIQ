@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { getResumeById, updateResume } from "../api/resume.api";
+import ThemeToggle from "../../../shared/components/ui/theme-toggle";
 
 export default function ResumeDetailsPage() {
   const { id } = useParams();
@@ -57,7 +58,10 @@ export default function ResumeDetailsPage() {
   return (
     <section className="page-wrap">
       <div className="panel">
-        <h1>Edit resume</h1>
+        <div className="row-between">
+          <h1>Edit resume</h1>
+          <ThemeToggle />
+        </div>
         <p className="muted">Resume ID: {id}</p>
 
         <form className="auth-form" onSubmit={onSave}>

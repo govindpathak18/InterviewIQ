@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../core/hooks/useAuth";
 import { registerUser } from "../api/auth.api";
 import AuthHeroImage from "../components/auth-hero-image";
+import ThemeToggle from "../../../shared/components/ui/theme-toggle";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -34,11 +35,18 @@ export default function RegisterPage() {
   };
 
   return (
-    <section className="auth-layout">
+    <section className="auth-layout auth-layout-modern">
       <AuthHeroImage />
 
-      <div className="auth-form-panel panel">
-        <h1>Create account</h1>
+      <div className="auth-form-panel panel glass-panel">
+        <div className="auth-panel-top">
+          <div>
+            <p className="eyebrow">InterviewIQ</p>
+            <h1>Create account</h1>
+          </div>
+          <ThemeToggle />
+        </div>
+
         <p className="muted">Start building your AI-powered interview preparation plan.</p>
 
         <form onSubmit={onSubmit} className="auth-form">
@@ -86,7 +94,7 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <p className="muted">
+        <p className="muted center-text mt-16">
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>

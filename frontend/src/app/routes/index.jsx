@@ -4,12 +4,16 @@ import LoginPage from "../../features/auth/pages/login.page";
 import RegisterPage from "../../features/auth/pages/register.page";
 import ResumesPage from "../../features/resumes/pages/resumes.page";
 import ResumeDetailsPage from "../../features/resumes/pages/resume-details.page";
+import ThemeToggle from "../../shared/components/ui/theme-toggle";
 
 function DashboardPage() {
   return (
     <section className="page-wrap">
       <div className="panel">
-        <h1>InterviewIQ Dashboard</h1>
+        <div className="row-between">
+          <h1>InterviewIQ Dashboard</h1>
+          <ThemeToggle />
+        </div>
         <p>Feature 1 complete: auth pages + protected route shell.</p>
         <p>Feature 2 started: resumes module with create/list/edit flows.</p>
 

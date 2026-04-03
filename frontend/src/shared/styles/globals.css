@@ -7,15 +7,23 @@ body {
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
   color: var(--text);
   background:
-    radial-gradient(circle at 10% 10%, rgba(124, 58, 237, 0.25), transparent 30%),
-    radial-gradient(circle at 90% 20%, rgba(6, 182, 212, 0.2), transparent 25%),
-    radial-gradient(circle at 50% 120%, rgba(245, 158, 11, 0.18), transparent 35%),
+    radial-gradient(circle at 10% 10%, color-mix(in srgb, var(--primary) 20%, transparent), transparent 30%),
+    radial-gradient(circle at 90% 20%, color-mix(in srgb, var(--secondary) 16%, transparent), transparent 28%),
+    radial-gradient(circle at 50% 120%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 35%),
     var(--bg);
   min-height: 100vh;
+  transition: background 0.25s ease, color 0.2s ease;
 }
 
 a {
   color: var(--secondary);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
 }
 
 .app-shell {
@@ -29,19 +37,42 @@ a {
 }
 
 .panel {
-  background: linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(27, 36, 56, 0.9));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--surface) 92%, transparent), color-mix(in srgb, var(--surface-2) 90%, transparent));
   border: 1px solid var(--border);
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(11, 16, 32, 0.45);
+  box-shadow: var(--panel-shadow);
   padding: 1.25rem;
+}
+
+.glass-panel {
+  backdrop-filter: blur(8px);
 }
 
 .muted {
   color: var(--muted);
 }
 
+.center-text {
+  text-align: center;
+}
+
+.eyebrow {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-bottom: 0.45rem;
+}
+
 .mt-16 {
   margin-top: 1rem;
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
 
 .quick-links {
@@ -59,10 +90,21 @@ a {
   grid-template-columns: 1.2fr 1fr;
 }
 
+.auth-layout-modern {
+  min-height: calc(100vh - 4rem);
+}
+
 .auth-form-panel {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.auth-panel-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .auth-form {
@@ -79,7 +121,7 @@ a {
 
 .auth-form input,
 .auth-form textarea {
-  background: rgba(15, 23, 42, 0.8);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
   border: 1px solid var(--border);
   color: var(--text);
   border-radius: 10px;
@@ -92,21 +134,23 @@ a {
 }
 
 .auth-form button,
-.ghost-btn {
+.ghost-btn,
+.theme-toggle {
   background: linear-gradient(90deg, var(--primary), var(--secondary));
-  color: white;
+  color: #fff;
   border: none;
   border-radius: 10px;
   padding: 0.75rem 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
 .auth-form button:hover,
-.ghost-btn:hover {
+.ghost-btn:hover,
+.theme-toggle:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--primary) 38%, transparent);
 }
 
 .auth-form button:disabled {
@@ -114,10 +158,16 @@ a {
   cursor: not-allowed;
 }
 
+.theme-toggle {
+  padding: 0.55rem 0.8rem;
+  font-size: 0.8rem;
+}
+
 .ghost-btn {
   background: transparent;
   border: 1px solid var(--border);
   box-shadow: none;
+  color: var(--text);
 }
 
 .error-text {
@@ -126,8 +176,20 @@ a {
 }
 
 .success-text {
-  color: #4ade80;
+  color: #16a34a;
   margin: 0.5rem 0 0;
+}
+
+.link-subtle {
+  font-size: 0.88rem;
+}
+
+.checkbox-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+  color: var(--muted);
 }
 
 .auth-hero-wrap,
@@ -146,7 +208,12 @@ a {
 .image-skeleton {
   position: absolute;
   inset: 0;
-  background: linear-gradient(120deg, #111827 10%, #27364f 35%, #111827 60%);
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--surface) 85%, transparent) 10%,
+    color-mix(in srgb, var(--surface-2) 70%, transparent) 35%,
+    color-mix(in srgb, var(--surface) 85%, transparent) 60%
+  );
   background-size: 200% 100%;
   animation: skeleton 1.6s infinite;
   z-index: 1;
@@ -175,9 +242,9 @@ a {
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(11, 16, 32, 0.92) 6%,
-    rgba(11, 16, 32, 0.25) 55%,
-    rgba(11, 16, 32, 0.15) 100%
+    color-mix(in srgb, var(--bg) 90%, transparent) 8%,
+    color-mix(in srgb, var(--bg) 30%, transparent) 55%,
+    color-mix(in srgb, var(--bg) 10%, transparent) 100%
   );
 }
 
@@ -198,7 +265,7 @@ a {
 
 .resume-card {
   border: 1px solid var(--border);
-  background: rgba(11, 16, 32, 0.65);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
   border-radius: 12px;
   padding: 0.9rem;
 }

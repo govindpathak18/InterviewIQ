@@ -6,4 +6,10 @@ export const ENDPOINTS = {
     refresh: "/auth/refresh",
     logout: "/auth/logout",
   },
+  resume: {
+    base: "/resume",
+    my: "/resume/my",
+    byId: (id) => `/resume/${id}`,
+    upload: "/resume/upload",
+  },
 };

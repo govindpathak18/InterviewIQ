@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #0B1020;
+  --primary: #6366F1;
+  --accent: #10B981;
+  --text: #F9FAFB;
+  --secondary: #374151;
+}
+
+body {
+  background: linear-gradient(135deg, var(--background) 0%, #1a1a2e 50%, #16213e 100%),
+              url('https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=2832&q=80') no-repeat center center fixed;
+  background-size: cover;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* 3D card effect */
+.card-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+.card-3d:hover {
+  transform: rotateY(5deg) rotateX(5deg);
+}
+
+.classic-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.75rem;
+  padding: 0.65rem 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.32);
+  transition: all 0.2s ease;
+}
+
+.classic-btn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 14px 32px rgba(99, 102, 241, 0.45);
+  background: linear-gradient(135deg, #4F46E5 0%, #A78BFA 100%);
+}
+
+.classic-btn:active {
+  transform: translateY(0px) scale(0.99);
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.45);
+}

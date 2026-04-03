@@ -5,14 +5,27 @@ const ApiError = require("../../utils/ApiError");
 
 const safeUserSelect = "-password -__v";
 
+/**
+ * Validate user ID format
+ * @param {string} id - User ID
+ * @throws {ApiError} - If invalid format
+ */
 const assertValidUserId = (id) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid user id");
   }
 };
 
+/**
+ * Get current user's profile
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} - User profile (without password)
+ * @throws {ApiError} - If not found
+ */
 const getMyProfile = async (userId) => {
-  const user = await User.findOne({ _id: userId, isActive: true }).select(safeUserSelect).lean();
+  const user = await User.findOne({ _id: userId, isActive: true })
+    .select(safeUserSelect)
+    .lean();
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -21,8 +34,15 @@ const getMyProfile = async (userId) => {
   return user;
 };
 
+/**
+ * Update user's profile
+ * @param {string} userId - User ID
+ * @param {Object} updates - Profile updates
+ * @returns {Promise<Object>} - Updated user (without password)
+ * @throws {ApiError} - If not found
+ */
 const updateMyProfile = async (userId, updates) => {
-  const user = await User.findOne({ _id: userId, isActive: true }).select("+password");
+  const user = await User.findOne({ _id: userId, isActive: true });
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -31,9 +51,20 @@ const updateMyProfile = async (userId, updates) => {
   Object.assign(user, updates);
   await user.save();
 
-  return User.findById(userId).select(safeUserSelect).lean();
+  return User.findById(userId)
+    .select(safeUserSelect)
+    .lean();
 };
 
+/**
+ * Change user password
+ * @param {string} userId - User ID
+ * @param {Object} params - Password parameters
+ * @param {string} params.currentPassword - Current password
+ * @param {string} params.newPassword - New password
+ * @returns {Promise<boolean>} - Success status
+ * @throws {ApiError} - If validation fails
+ */
 const changePassword = async (userId, { currentPassword, newPassword }) => {
   const user = await User.findOne({ _id: userId, isActive: true }).select("+password");
 
@@ -58,7 +89,17 @@ const changePassword = async (userId, { currentPassword, newPassword }) => {
   return true;
 };
 
-const listUsers = async ({ role, isActive, search, page, limit }) => {
+/**
+ * List all users with filtering and pagination
+ * @param {Object} options - Filter options
+ * @param {string} [options.role] - Filter by role
+ * @param {boolean} [options.isActive] - Filter by status
+ * @param {string} [options.search] - Search in name/email/headline
+ * @param {number} [options.page=1] - Page number
+ * @param {number} [options.limit=10] - Items per page
+ * @returns {Promise<Object>} - Users and metadata
+ */
+const listUsers = async ({ role, isActive, search, page = 1, limit = 10 }) => {
   const filter = {};
 
   if (role) {
@@ -80,7 +121,12 @@ const listUsers = async ({ role, isActive, search, page, limit }) => {
   const skip = (page - 1) * limit;
 
   const [users, total] = await Promise.all([
-    User.find(filter).select(safeUserSelect).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    User.find(filter)
+      .select(safeUserSelect)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
     User.countDocuments(filter),
   ]);
 
@@ -95,10 +141,18 @@ const listUsers = async ({ role, isActive, search, page, limit }) => {
   };
 };
 
+/**
+ * Get user by ID (admin only)
+ * @param {string} id - User ID
+ * @returns {Promise<Object>} - User (without password)
+ * @throws {ApiError} - If not found
+ */
 const getUserById = async (id) => {
   assertValidUserId(id);
 
-  const user = await User.findById(id).select(safeUserSelect).lean();
+  const user = await User.findById(id)
+    .select(safeUserSelect)
+    .lean();
 
   if (!user) {
     throw new ApiError(404, "User not found");
@@ -107,6 +161,14 @@ const getUserById = async (id) => {
   return user;
 };
 
+/**
+ * Update user role (admin only)
+ * @param {string} id - User ID
+ * @param {string} role - New role
+ * @param {string} actorId - Admin user ID (prevent self-demotion)
+ * @returns {Promise<Object>} - Updated user (without password)
+ * @throws {ApiError} - If not found or authorization fails
+ */
 const updateUserRole = async (id, role, actorId) => {
   assertValidUserId(id);
 
@@ -123,9 +185,19 @@ const updateUserRole = async (id, role, actorId) => {
   user.role = role;
   await user.save();
 
-  return User.findById(id).select(safeUserSelect).lean();
+  return User.findById(id)
+    .select(safeUserSelect)
+    .lean();
 };
 
+/**
+ * Update user status (admin only)
+ * @param {string} id - User ID
+ * @param {boolean} isActive - Active status
+ * @param {string} actorId - Admin user ID (prevent self-deactivation)
+ * @returns {Promise<Object>} - Updated user (without password)
+ * @throws {ApiError} - If not found or authorization fails
+ */
 const updateUserStatus = async (id, isActive, actorId) => {
   assertValidUserId(id);
 
@@ -141,12 +213,24 @@ const updateUserStatus = async (id, isActive, actorId) => {
 
   user.isActive = isActive;
   if (!isActive) {
-    user.refreshTokenVersion += 1;
+    user.refreshTokenVersion += 1; // Invalidate all tokens
   }
 
   await user.save();
 
-  return User.findById(id).select(safeUserSelect).lean();
+  return User.findById(id)
+    .select(safeUserSelect)
+    .lean();
+};
+
+module.exports = {
+  getMyProfile,
+  updateMyProfile,
+  changePassword,
+  listUsers,
+  getUserById,
+  updateUserRole,
+  updateUserStatus,
 };
 
 module.exports = {

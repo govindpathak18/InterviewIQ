@@ -21,8 +21,17 @@ const updateInterviewSchema = z
     message: "At least one field is required for update",
   });
 
+/**
+ * Validation for query parameters (pagination)
+ */
+const paginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1).optional(),
+  limit: z.coerce.number().int().min(1).max(50).default(20).optional(),
+});
+
 module.exports = {
   generateInterviewSchema,
   interviewIdParamSchema,
   updateInterviewSchema,
+  paginationQuerySchema,
 };

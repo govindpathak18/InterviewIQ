@@ -86,6 +86,7 @@ const interviewSchema = new mongoose.Schema(
       type: String,
       enum: ["generated", "in-progress", "completed"],
       default: "generated",
+      index: true,
     },
     notes: {
       type: String,
@@ -100,5 +101,11 @@ const interviewSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Compound indexes for common query patterns
+interviewSchema.index({ userId: 1, isActive: 1 }, { name: "userId_isActive" });
+interviewSchema.index({ userId: 1, createdAt: -1 }, { name: "userId_createdAt" });
+interviewSchema.index({ _id: 1, userId: 1 }, { name: "_id_userId" }); // Fast access check
+interviewSchema.index({ resumeId: 1, jobDescriptionId: 1 }, { name: "resumeId_jobDescriptionId" });
 
 module.exports = mongoose.model("Interview", interviewSchema);

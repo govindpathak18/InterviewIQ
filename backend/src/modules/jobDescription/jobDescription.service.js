@@ -3,6 +3,12 @@ const JobDescription = require("./jobDescription.model");
 const Resume = require("../resume/resume.model");
 const ApiError = require("../../utils/ApiError");
 
+/**
+ * Validate that resume exists and belongs to user
+ * @param {string} [resumeId] - Resume ID
+ * @param {string} userId - User ID
+ * @throws {ApiError} - If resume not found or unauthorized
+ */
 const ensureOwnedResume = async (resumeId, userId) => {
   if (!resumeId) {
     return;
@@ -23,6 +29,12 @@ const ensureOwnedResume = async (resumeId, userId) => {
   }
 };
 
+/**
+ * Validate job description ownership
+ * @param {Object} document - Job description document
+ * @param {string} userId - User ID
+ * @throws {ApiError} - If not found or unauthorized
+ */
 const assertOwnership = (document, userId) => {
   if (!document || !document.isActive) {
     throw new ApiError(404, "Job description not found");
@@ -33,6 +45,12 @@ const assertOwnership = (document, userId) => {
   }
 };
 
+/**
+ * Create job description
+ * @param {Object} payload - Job description data
+ * @returns {Promise<Object>} - Created job description
+ * @throws {ApiError} - If resume not found
+ */
 const createJobDescription = async (payload) => {
   await ensureOwnedResume(payload.resumeId, payload.userId);
 
@@ -40,20 +58,43 @@ const createJobDescription = async (payload) => {
   return document;
 };
 
+/**
+ * Get user's job descriptions (read-only, optimized with .lean())
+ * @param {string} userId - User ID
+ * @returns {Promise<Array>} - Array of job descriptions
+ */
 const getMyJobDescriptions = async (userId) => {
-  return JobDescription.find({ userId, isActive: true }).sort({ createdAt: -1 });
+  return JobDescription.find({ userId, isActive: true })
+    .sort({ createdAt: -1 })
+    .lean(); // Performance optimization: returns plain JS objects
 };
 
+/**
+ * Get job description by ID with ownership check
+ * @param {string} id - Job description ID
+ * @param {string} userId - User ID
+ * @returns {Promise<Object>} - Job description document
+ * @throws {ApiError} - If not found or unauthorized
+ */
 const getJobDescriptionById = async (id, userId) => {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new ApiError(400, "Invalid job description id");
   }
 
+  // Don't use .lean() here because we may modify it later
   const document = await JobDescription.findById(id);
   assertOwnership(document, userId);
   return document;
 };
 
+/**
+ * Update job description
+ * @param {string} id - Job description ID
+ * @param {string} userId - User ID
+ * @param {Object} updates - Updates to apply
+ * @returns {Promise<Object>} - Updated job description
+ * @throws {ApiError} - If not found or unauthorized
+ */
 const updateJobDescription = async (id, userId, updates) => {
   const document = await getJobDescriptionById(id, userId);
   await ensureOwnedResume(updates.resumeId, userId);
@@ -62,6 +103,13 @@ const updateJobDescription = async (id, userId, updates) => {
   return document;
 };
 
+/**
+ * Delete job description (soft delete)
+ * @param {string} id - Job description ID
+ * @param {string} userId - User ID
+ * @returns {Promise<boolean>} - Success status
+ * @throws {ApiError} - If not found or unauthorized
+ */
 const deleteJobDescription = async (id, userId) => {
   const document = await getJobDescriptionById(id, userId);
   document.isActive = false;

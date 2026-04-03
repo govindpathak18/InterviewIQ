@@ -65,6 +65,9 @@ const jobDescriptionSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-jobDescriptionSchema.index({ userId: 1, createdAt: -1 });
+// Compound indexes for common query patterns
+jobDescriptionSchema.index({ userId: 1, isActive: 1 }, { name: "userId_isActive" });
+jobDescriptionSchema.index({ userId: 1, createdAt: -1 }, { name: "userId_createdAt" });
+jobDescriptionSchema.index({ _id: 1, userId: 1 }, { name: "_id_userId" }); // Fast access check
 
 module.exports = mongoose.model("JobDescription", jobDescriptionSchema);

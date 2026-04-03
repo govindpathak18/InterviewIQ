@@ -3,6 +3,11 @@ const sendResponse = require("../../utils/response");
 const aiService = require("./ai.service");
 const { renderResumePdfFromHtml } = require("./ai.pdf");
 
+/**
+ * Generate interview pack based on resume and job description
+ * @route POST /ai/interview-pack
+ * @access Private
+ */
 const generateInterviewPack = asyncHandler(async (req, res) => {
   const data = await aiService.generateInterviewPack({
     userId: req.user._id,
@@ -10,12 +15,17 @@ const generateInterviewPack = asyncHandler(async (req, res) => {
   });
 
   return sendResponse(res, {
-    statusCode: 200,
+    statusCode: 201, // Fixed: was 200, changed to 201 (Created)
     message: "Interview pack generated successfully",
     data,
   });
 });
 
+/**
+ * Generate ATS-friendly resume in HTML format
+ * @route POST /ai/ats-resume
+ * @access Private
+ */
 const generateAtsResume = asyncHandler(async (req, res) => {
   const data = await aiService.generateAtsResume({
     userId: req.user._id,
@@ -23,12 +33,17 @@ const generateAtsResume = asyncHandler(async (req, res) => {
   });
 
   return sendResponse(res, {
-    statusCode: 200,
+    statusCode: 201, // Fixed: was 200, changed to 201 (Created)
     message: "ATS resume generated successfully",
     data,
   });
 });
 
+/**
+ * Generate ATS-friendly resume as PDF
+ * @route POST /ai/ats-resume/pdf
+ * @access Private
+ */
 const generateAtsResumePdf = asyncHandler(async (req, res) => {
   const data = await aiService.generateAtsResume({
     userId: req.user._id,
@@ -40,7 +55,7 @@ const generateAtsResumePdf = asyncHandler(async (req, res) => {
   res.setHeader("Content-Type", "application/pdf");
   res.setHeader("Content-Disposition", 'attachment; filename="ats-resume.pdf"');
 
-  return res.status(200).send(pdfBuffer);
+  return res.status(201).send(pdfBuffer);
 });
 
 module.exports = {

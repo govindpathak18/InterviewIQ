@@ -50,6 +50,9 @@ const resumeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-resumeSchema.index({ userId: 1, createdAt: -1 });
+// Compound indexes for common query patterns
+resumeSchema.index({ userId: 1, isActive: 1 }, { name: "userId_isActive" });
+resumeSchema.index({ userId: 1, createdAt: -1 }, { name: "userId_createdAt" });
+resumeSchema.index({ _id: 1, userId: 1 }, { name: "_id_userId" }); // Fast access check
 
 module.exports = mongoose.model("Resume", resumeSchema);

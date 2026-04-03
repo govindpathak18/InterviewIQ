@@ -1,14 +1,80 @@
 const rateLimit = require("express-rate-limit");
+const ApiError = require("../utils/ApiError");
 
-const rateLimitMiddleware = rateLimit({
+/**
+ * General API rate limiter - 100 requests per 15 minutes per IP
+ */
+const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // max requests per IP per window
+  max: 100, // 100 requests per windowMs
+  message: "Too many requests from this IP, please try again after 15 minutes",
   standardHeaders: true,
   legacyHeaders: false,
-  message: {
-    success: false,
-    message: "Too many requests. Please try again later.",
+  handler: (req, res, next) => {
+    next(new ApiError(429, "Too many requests, please try again later"));
+  },
+  skip: (req) => process.env.NODE_ENV === "development",
+});
+
+/**
+ * Auth rate limiter - 5 requests per 15 minutes (stricter for auth)
+ */
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: "Too many authentication attempts",
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, next) => {
+    next(new ApiError(429, "Too many authentication attempts. Please try again after 15 minutes"));
+  },
+  skip: (req) => process.env.NODE_ENV === "development",
+  keyGenerator: (req) => {
+    // Use email as key if available for more targeted rate limiting
+    return req.body?.email || req.ip;
   },
 });
 
-module.exports = rateLimitMiddleware;
+/**
+ * AI API rate limiter - 10 requests per hour per user (CRITICAL - Gemini API has costs)
+ */
+const aiLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 10, // 10 requests per hour per user
+  message: "Too many AI requests",
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, next) => {
+    next(new ApiError(429, "AI request limit exceeded. Maximum 10 requests per hour"));
+  },
+  skip: (req) => process.env.NODE_ENV === "development",
+  keyGenerator: (req) => {
+    // Use authenticated user ID if available
+    return req.user?._id?.toString() || req.ip;
+  },
+});
+
+/**
+ * Resume upload rate limiter - 20 uploads per day per user
+ */
+const uploadLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000, // 24 hours
+  max: 20, // 20 requests per day
+  message: "Too many resume uploads",
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, next) => {
+    next(new ApiError(429, "Resume upload limit exceeded. Maximum 20 uploads per day"));
+  },
+  skip: (req) => process.env.NODE_ENV === "development",
+  keyGenerator: (req) => {
+    return req.user?._id?.toString() || req.ip;
+  },
+});
+
+module.exports = {
+  generalLimiter,
+  authLimiter,
+  aiLimiter,
+  uploadLimiter,
+};

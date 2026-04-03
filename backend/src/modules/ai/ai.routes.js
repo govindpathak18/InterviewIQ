@@ -2,9 +2,13 @@ const express = require("express");
 const controller = require("./ai.controller");
 const { authenticate } = require("../../middleware/auth.middleware");
 const validate = require("../../middleware/validate.middleware");
+const { aiLimiter } = require("../../middleware/rateLimit.middleware");
 const { createAiInterviewSchema, createAtsResumeSchema } = require("./ai.validation");
 
 const router = express.Router();
+
+// Apply rate limiting to all AI endpoints (CRITICAL SECURITY FIX)
+router.use(aiLimiter);
 
 router.post(
   "/interview-pack",

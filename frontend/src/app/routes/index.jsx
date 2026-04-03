@@ -5,6 +5,10 @@ import RegisterPage from "../../features/auth/pages/register.page";
 import ResumesPage from "../../features/resumes/pages/resumes.page";
 import ResumeDetailsPage from "../../features/resumes/pages/resume-details.page";
 import ThemeToggle from "../../shared/components/ui/theme-toggle";
+import { Navigate, useRoutes } from "react-router-dom";
+import ProtectedRoute from "./protected.route";
+import LoginPage from "../../features/auth/pages/login.page";
+import RegisterPage from "../../features/auth/pages/register.page";
 
 function DashboardPage() {
   return (
@@ -20,6 +24,8 @@ function DashboardPage() {
         <nav className="quick-links">
           <Link to="/resumes">Go to resumes</Link>
         </nav>
+        <h1>InterviewIQ Dashboard</h1>
+        <p>Feature 1 complete: auth pages + protected route shell.</p>
       </div>
     </section>
   );

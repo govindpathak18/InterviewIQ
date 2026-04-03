@@ -10,12 +10,15 @@ export default function LoginPage() {
   const { setUser } = useAuth();
 
   const [form, setForm] = useState({ email: "", password: "", rememberMe: true });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const onChange = (event) => {
     const { name, value, type, checked } = event.target;
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const onSubmit = async (event) => {
@@ -25,6 +28,7 @@ export default function LoginPage() {
 
     try {
       const response = await loginUser({ email: form.email, password: form.password });
+      const response = await loginUser(form);
       setUser(response?.data?.user || response?.user || { email: form.email, role: "user" });
       navigate("/dashboard", { replace: true });
     } catch (submitError) {
@@ -48,6 +52,12 @@ export default function LoginPage() {
         </div>
 
         <p className="muted">Sign in to continue with your interview preparation workspace.</p>
+    <section className="auth-layout">
+      <AuthHeroImage />
+
+      <div className="auth-form-panel panel">
+        <h1>Welcome back</h1>
+        <p className="muted">Sign in to continue your InterviewIQ journey.</p>
 
         <form onSubmit={onSubmit} className="auth-form">
           <label>
@@ -97,6 +107,7 @@ export default function LoginPage() {
         </form>
 
         <p className="muted center-text mt-16">
+        <p className="muted">
           New here? <Link to="/register">Create account</Link>
         </p>
       </div>

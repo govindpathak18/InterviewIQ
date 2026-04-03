@@ -1,5 +1,6 @@
 :root,
 :root[data-theme="dark"] {
+:root {
   --bg: #0b1020;
   --surface: #111827;
   --surface-2: #1b2438;
@@ -25,4 +26,5 @@
   --danger: #dc2626;
   --border: rgba(15, 23, 42, 0.15);
   --panel-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+  --border: rgba(148, 163, 184, 0.18);
 }

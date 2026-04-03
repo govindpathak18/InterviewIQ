@@ -47,6 +47,11 @@ export default function RegisterPage() {
           <ThemeToggle />
         </div>
 
+    <section className="auth-layout">
+      <AuthHeroImage />
+
+      <div className="auth-form-panel panel">
+        <h1>Create account</h1>
         <p className="muted">Start building your AI-powered interview preparation plan.</p>
 
         <form onSubmit={onSubmit} className="auth-form">
@@ -95,6 +100,7 @@ export default function RegisterPage() {
         </form>
 
         <p className="muted center-text mt-16">
+        <p className="muted">
           Already have an account? <Link to="/login">Sign in</Link>
         </p>
       </div>

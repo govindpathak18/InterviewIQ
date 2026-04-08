@@ -5,7 +5,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 
-const rateLimitMiddleware = require("./middleware/rateLimit.middleware");
+const { generalLimiter } = require("./middleware/rateLimit.middleware");
 const env = require("./config/env");
 const ApiError = require("./utils/ApiError");
 const errorMiddleware = require("./middleware/error.middleware");
@@ -39,7 +39,7 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use(rateLimitMiddleware);
+app.use(generalLimiter);
 
 // ---------- Health ----------
 app.get("/health", (req, res) => {

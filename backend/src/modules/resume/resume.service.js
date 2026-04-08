@@ -31,12 +31,28 @@ const createResume = async (payload) => {
 /**
  * Get user's resumes (read-only, optimized with .lean())
  * @param {string} userId - User ID
- * @returns {Promise<Array>} - Array of resumes
+ * @param {number} [page=1] - Page number (1-based)
+ * @param {number} [limit=10] - Number of resumes per page
+ * @returns {Promise<Object>} - Object with resumes array and pagination info
  */
-const getMyResumes = async (userId) => {
-  return Resume.find({ userId, isActive: true })
+const getMyResumes = async (userId, page = 1, limit = 10) => {
+  const skip = (page - 1) * limit;
+  const total = await Resume.countDocuments({ userId, isActive: true });
+  const resumes = await Resume.find({ userId, isActive: true })
     .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
     .lean(); // Performance optimization: returns plain JS objects
+
+  return {
+    resumes,
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 /**

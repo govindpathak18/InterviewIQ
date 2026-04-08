@@ -6,8 +6,8 @@ const createAiInterviewSchema = z
   .object({
     resumeId: z.string().regex(objectIdRegex, "Invalid resume id").optional(),
     jobDescriptionId: z.string().regex(objectIdRegex, "Invalid job description id").optional(),
-    resumeText: z.string().min(50).optional(),
-    jdText: z.string().min(50).optional(),
+    resumeText: z.string().trim().min(500).optional(),
+    jdText: z.string().trim().min(500).optional(),
     selfDescription: z.string().trim().max(5000).optional(),
   })
   .refine((payload) => Boolean(payload.resumeId || payload.resumeText), {
@@ -21,8 +21,8 @@ const createAtsResumeSchema = z
   .object({
     resumeId: z.string().regex(objectIdRegex, "Invalid resume id").optional(),
     jobDescriptionId: z.string().regex(objectIdRegex, "Invalid job description id").optional(),
-    resumeText: z.string().min(50).optional(),
-    jdText: z.string().min(50).optional(),
+    resumeText: z.string().trim().min(500).optional(),
+    jdText: z.string().trim().min(500).optional(),
   })
   .refine((payload) => Boolean(payload.resumeId || payload.resumeText), {
     message: "Provide either resumeId or resumeText",

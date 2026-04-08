@@ -38,6 +38,6 @@ const tokenSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-tokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+tokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 86400 }); // Delete 24 hours after expiry
 
 module.exports = mongoose.model("TokenBlacklist", tokenSchema);

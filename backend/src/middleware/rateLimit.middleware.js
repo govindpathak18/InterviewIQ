@@ -3,6 +3,7 @@ const ApiError = require("../utils/ApiError");
 
 /**
  * General API rate limiter - 100 requests per 15 minutes per IP
+ * Uses default IP-based rate limiting
  */
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -18,6 +19,7 @@ const generalLimiter = rateLimit({
 
 /**
  * Auth rate limiter - 5 requests per 15 minutes (stricter for auth)
+ * Uses default IP-based rate limiting
  */
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -29,14 +31,11 @@ const authLimiter = rateLimit({
     next(new ApiError(429, "Too many authentication attempts. Please try again after 15 minutes"));
   },
   skip: (req) => process.env.NODE_ENV === "development",
-  keyGenerator: (req) => {
-    // Use email as key if available for more targeted rate limiting
-    return req.body?.email || req.ip;
-  },
 });
 
 /**
  * AI API rate limiter - 10 requests per hour per user (CRITICAL - Gemini API has costs)
+ * Uses default IP-based rate limiting
  */
 const aiLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -48,14 +47,11 @@ const aiLimiter = rateLimit({
     next(new ApiError(429, "AI request limit exceeded. Maximum 10 requests per hour"));
   },
   skip: (req) => process.env.NODE_ENV === "development",
-  keyGenerator: (req) => {
-    // Use authenticated user ID if available
-    return req.user?._id?.toString() || req.ip;
-  },
 });
 
 /**
  * Resume upload rate limiter - 20 uploads per day per user
+ * Uses default IP-based rate limiting
  */
 const uploadLimiter = rateLimit({
   windowMs: 24 * 60 * 60 * 1000, // 24 hours
@@ -67,9 +63,6 @@ const uploadLimiter = rateLimit({
     next(new ApiError(429, "Resume upload limit exceeded. Maximum 20 uploads per day"));
   },
   skip: (req) => process.env.NODE_ENV === "development",
-  keyGenerator: (req) => {
-    return req.user?._id?.toString() || req.ip;
-  },
 });
 
 module.exports = {

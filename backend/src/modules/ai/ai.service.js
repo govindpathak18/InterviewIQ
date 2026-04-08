@@ -56,8 +56,8 @@ const resolveResumeData = async (userId, resumeId, resumeText) => {
     finalResumeText = resume.originalText;
   }
 
-  if (!finalResumeText || finalResumeText.trim().length < 50) {
-    throw new ApiError(400, "Resume text must be provided and contain at least 50 characters");
+  if (!finalResumeText || finalResumeText.trim().length < 500) {
+    throw new ApiError(400, "Resume text must be provided and contain at least 500 characters");
   }
 
   return finalResumeText;
@@ -82,8 +82,8 @@ const resolveJobDescriptionData = async (userId, jobDescriptionId, jdText) => {
     finalJdText = jd.jdText;
   }
 
-  if (!finalJdText || finalJdText.trim().length < 50) {
-    throw new ApiError(400, "Job description must be provided and contain at least 50 characters");
+  if (!finalJdText || finalJdText.trim().length < 500) {
+    throw new ApiError(400, "Job description must be provided and contain at least 500 characters");
   }
 
   return finalJdText;

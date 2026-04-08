@@ -36,7 +36,7 @@ const uploadResume = asyncHandler(async (req, res) => {
   const originalText = await parseResumeTextFromFile(req.file);
 
   // Validate parse success (CRITICAL FIX)
-  if (!originalText || originalText.trim().length < 50) {
+  if (!originalText || originalText.trim().length < 500) {
     throw new ApiError(400, "Failed to extract resume text. Please ensure file is valid and not corrupted.");
   }
 
@@ -62,12 +62,21 @@ const uploadResume = asyncHandler(async (req, res) => {
  * @access Private
  */
 const getMyResumes = asyncHandler(async (req, res) => {
-  const resumes = await resumeService.getMyResumes(req.user._id);
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+
+  // Validate pagination params
+  if (page < 1 || limit < 1 || limit > 100) {
+    throw new ApiError(400, "Invalid pagination parameters");
+  }
+
+  const result = await resumeService.getMyResumes(req.user._id, page, limit);
 
   return sendResponse(res, {
     statusCode: 200,
     message: "Resumes fetched successfully",
-    data: resumes,
+    data: result.resumes,
+    pagination: result.pagination,
   });
 });
 

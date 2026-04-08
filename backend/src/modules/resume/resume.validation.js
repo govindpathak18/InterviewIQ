@@ -4,7 +4,7 @@ const objectIdRegex = /^[0-9a-fA-F]{24}$/;
 
 const createManualResumeSchema = z.object({
   title: z.string().trim().min(2, "Title must be at least 2 characters").max(120).optional(),
-  originalText: z.string().min(50, "Resume text must be at least 50 characters"),
+  originalText: z.string().min(500, "Resume text must be at least 500 characters"),
   parsedData: z.record(z.any()).optional(),
 });
 
@@ -15,7 +15,7 @@ const uploadResumeMetaSchema = z.object({
 const updateResumeSchema = z
   .object({
     title: z.string().trim().min(2).max(120).optional(),
-    originalText: z.string().min(50).optional(),
+    originalText: z.string().min(500).optional(),
     parsedData: z.record(z.any()).optional(),
     isActive: z.boolean().optional(),
   })

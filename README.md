@@ -769,3 +769,24 @@ export type Interview = {
   updatedAt: string;
 };
 ```
+
+---
+
+## Frontend (React + Tailwind + Framer Motion)
+
+A full InterviewIQ frontend is available in `./frontend`.
+
+### Run locally
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Production build
+
+```bash
+npm run build
+npm run preview
+```
